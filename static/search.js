@@ -16,8 +16,8 @@ function AddSearchResult(title,image,text){
 }
 async function searchIt(){
   var source = document.getElementById("source").value;
-  var city = document.getElementById("city").value;
-  var state = document.getElementById("state").value;
+  var city = document.getElementById("city").value.toUpperCase();
+  var state = document.getElementById("state").value.toUpperCase();
   const page = await fetch("/search?source="+source+"&city="+city+"&state="+state)
   const pageJson = await page.json()
   document.getElementById("results").innerHTML = ""

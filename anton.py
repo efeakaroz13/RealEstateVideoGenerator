@@ -4,6 +4,8 @@ import json
 import random
 from gtts import gTTS
 import string
+from imageEditor import DetailsEditor
+from moviepy.editor import *
 
 agents=open("agents.txt","r").readlines()
 
@@ -30,6 +32,7 @@ class Anton:
         }
         page = requests.get(URL)
         data= json.loads(page.content)
+
         around_median_homes_for_sale = data["result"]["results"]["around_median_homes_for_sale"]["properties"]
         new_listings_for_sale = data["result"]["results"]["new_listings_for_sale"]["properties"]
         open_houses_for_sale = data["result"]["results"]["open_houses_for_sale"]["properties"]
@@ -146,11 +149,43 @@ class Anton:
             pass
         return images
 
+    def videoGenRealtor(self,data,length):
+        baths = data["description"]["baths"]
+        sqfeet =data["description"]["sqft"]
+        Address = data["location"]["address"]["state_code"]+" "+data["location"]["address"]["city"]+" "+data["location"]["address"]["line"]
+        
+        list_price = data["list_price"]
+        list_date = data["list_date"].split("T")[0].replace("-","/")
+
+        images = self.downloadAllImages(data)
+        editedImages = []
+
+        for i in images:
+            fname = f"images/{self.FileNameCreate(15)}.jpg"
+            editor = DetailsEditor(listPrice=list_price,Address=Address,baths=baths,sqfeet=sqfeet,lotsqfeet=data["description"]["lot_sqft"],list_date=list_date,image_name=i)
+            editor.save(fname)
+            os.system(f"rm {i}")
+            editedImages.append(fname)
+
+        clips = []
+        for e in editedImages:
+
+            clips.append(ImageClip(e).set_duration(length/len(editedImages)))
+        
+        video = concatenate(clips, method="compose")
+        videoname = f"static/{self.FileNameCreate(12)}.mp4"
+        video.write_videofile(videoname, fps=30)
+        for e in editedImages:
+            os.system(f"rm '{e}'")
+        return videoname
+
+        
+
+        
+
 if __name__ =="__main__":
     myanton = Anton()
-    allData= myanton.getZillowData()
-    for a in  allData:
-        img = myanton.ZillowImageDownloader(a)
-        for i in img:
-            print(i)
-        break
+    allData= myanton.getData()
+    print(myanton.videoGenRealtor(allData[0],150))
+
+    
