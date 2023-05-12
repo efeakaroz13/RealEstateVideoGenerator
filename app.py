@@ -1,7 +1,7 @@
 from flask import Flask,render_template,request,redirect
 import requests
 from anton import Anton
-
+import json 
 app  = Flask(__name__)
 myanton = Anton()
 
@@ -25,6 +25,39 @@ def search():
         data = myanton.getData(city=city,state=state)
 
     return {"SCC":True,"out":data}
+
+
+@app.route("/gen/realtor",methods=["POST"])
+def realtorGen():
+    print("started------")
+    data = request.form.get("data")
+    try:
+        data = json.loads(data)
+    except:
+        return {"SCC":False,"err":"Data not specified"}
+    
+    anton = Anton()
+    output = anton.videoGenRealtor(data)
+
+
+    return {"SCC":True,"output":output}
+
+
+@app.route("/gen/zillow",methods=["POST"])
+def zillowGen():
+    print("started------")
+    data = request.form.get("data")
+    try:
+        data = json.loads(data)
+    except:
+        return {"SCC":False,"err":"Data not specified"}
+    
+    anton = Anton()
+    output = anton.videoGenZillow(data)
+
+
+    return {"SCC":True,"output":output}
+
 
 if __name__ == "__main__":
     app.run(debug=True)

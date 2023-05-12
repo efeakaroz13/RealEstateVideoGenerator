@@ -21,15 +21,16 @@
 
     </select><input type="text" id="city" placeholder="City"><input type="text" id="state" placeholder="State" ><button style="background:none;margin-left:10px;border:1px solid#000;" onclick="searchIt()">Search</button><br>
     <center>
+    <div id="gen">
 
+    </div><br>
     <div class="results" id="results">
 
     </div>
     </center>
   </div>
-  <script type="text/javascript" src='/static/search.js'>
-
-  </script>
+  <script type="text/javascript" src='/static/search.js'></script>
+  <script type="text/javascript" src='/static/generator.js'></script>
   <style type="text/css">
     .results{
       width:90%;
@@ -42,5 +43,6 @@
       margin:10px
     }
   </style>
+
   </body>
 </html>

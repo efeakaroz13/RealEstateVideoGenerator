@@ -149,7 +149,7 @@ class Anton:
             pass
         return images
 
-    def videoGenRealtor(self,data,length):
+    def videoGenRealtor(self,data):
         baths = data["description"]["baths"]
         sqfeet =data["description"]["sqft"]
         Address = data["location"]["address"]["state_code"]+" "+data["location"]["address"]["city"]+" "+data["location"]["address"]["line"]
@@ -170,9 +170,85 @@ class Anton:
         clips = []
         for e in editedImages:
 
-            clips.append(ImageClip(e).set_duration(length/len(editedImages)))
+            clips.append(ImageClip(e).set_duration(5))
         
         video = concatenate(clips, method="compose")
+
+        try:
+            allSounds = os.listdir("ncs")
+            allSounds2 = []
+            for a2 in allSounds:
+                try:
+                    a2.split(".mp3")[1]
+                    allSounds2.append(a2)
+                except:
+                    pass
+
+            allSounds = allSounds2
+
+        except:
+            allSounds = []
+
+        if len(allSounds)>0:
+            audioSelected = random.choice(allSounds)
+            audioclip = AudioFileClip(f"ncs/{audioSelected}").subclip(0,len(editedImages)*5)
+
+            new_audioclip = CompositeAudioClip([audioclip])
+            video.audio = new_audioclip
+        videoname = f"static/{self.FileNameCreate(12)}.mp4"
+        video.write_videofile(videoname, fps=30)
+        for e in editedImages:
+            os.system(f"rm '{e}'")
+        return videoname
+
+        
+
+    def videoGenZillow(self,data):
+        baths = data["hdpData"]["homeInfo"]["bedrooms"]
+        sqfeet =data["area"]
+        Address = data["address"]
+        
+        list_price = data["unformattedPrice"]
+        list_date = data["openHouseEndDate"].split("T")[0].replace("-","/")
+
+        images = self.ZillowImageDownloader(data)
+        editedImages = []
+
+        for i in images:
+            fname = f"images/{self.FileNameCreate(15)}.jpg"
+            editor = DetailsEditor(listPrice=list_price,Address=Address,baths=baths,sqfeet=sqfeet,lotsqfeet=0,list_date=list_date,image_name=i)
+            editor.save(fname)
+            os.system(f"rm {i}")
+            editedImages.append(fname)
+
+        clips = []
+        for e in editedImages:
+
+            clips.append(ImageClip(e).set_duration(5))
+        
+        video = concatenate(clips, method="compose")
+
+        try:
+            allSounds = os.listdir("ncs")
+            allSounds2 = []
+            for a2 in allSounds:
+                try:
+                    a2.split(".mp3")[1]
+                    allSounds2.append(a2)
+                except:
+                    pass
+
+            allSounds = allSounds2
+
+        except:
+            allSounds = []
+
+        if len(allSounds)>0:
+            audioSelected = random.choice(allSounds)
+            audioclip = AudioFileClip(f"ncs/{audioSelected}").subclip(0,len(editedImages)*5)
+
+            new_audioclip = CompositeAudioClip([audioclip])
+            video.audio = new_audioclip
         videoname = f"static/{self.FileNameCreate(12)}.mp4"
         video.write_videofile(videoname, fps=30)
         for e in editedImages:
@@ -186,6 +262,6 @@ class Anton:
 if __name__ =="__main__":
     myanton = Anton()
     allData= myanton.getData()
-    print(myanton.videoGenRealtor(allData[0],150))
+    print(myanton.videoGenRealtor(allData[0]))
 
     
