@@ -60,7 +60,8 @@ class DetailsEditor:
     
     def __init__(self,listPrice,Address,baths,sqfeet,lotsqfeet,list_date,image_name):
         icv2 = cv2.imread(image_name)
-        icv2 = self.image_resize(icv2,width=1920,height=1080)
+        icv2 = self.image_resize(icv2,width=1920)
+        #print(icv2.shape)
         cv2.imwrite(image_name,icv2)
 
         self.fontName = "fonts/CaviarDreams_Bold.ttf"
@@ -71,8 +72,8 @@ class DetailsEditor:
         self.img = Image.open(self.imageName)
         self.drawImage = ImageDraw.Draw(self.img)
 
-        if len(Address)>33:
-            extraspace= 190
+        if len(Address)>25:
+           extraspace = (len(Address)-25)*36
         else:
             extraspace = 0
         
