@@ -1,2 +1,2 @@
 # RealEstateVideoGenerator
- realestate video generator for tuan
+ Real Estate Video Creator software, made with python. 
